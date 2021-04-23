@@ -5,6 +5,7 @@
 
 import CoreData
 
+/// Core data class that has a name property which can be used to fetch it.
 public protocol NamedManagedObject: NSManagedObject {
     var name: String { get set }
     static func named(_ named: String, in context: NSManagedObjectContext) -> Self
@@ -26,7 +27,7 @@ public extension NamedManagedObject {
      If it doesn't exist, we optionally create it, or return nil.
     */
     
-    static  func named(_ named: String, in context: NSManagedObjectContext, createIfMissing: Bool) -> Self? {
+    static func named(_ named: String, in context: NSManagedObjectContext, createIfMissing: Bool) -> Self? {
 
         let request: NSFetchRequest<Self> = fetcher(in: context)
         request.predicate = NSPredicate(format: "name = %@", named)
