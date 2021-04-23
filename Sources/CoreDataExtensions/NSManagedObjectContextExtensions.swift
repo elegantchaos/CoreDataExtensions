@@ -7,7 +7,7 @@ import CoreData
 
 extension NSManagedObjectContext {
     
-    
+     
     /**
      Return an NSFetchRequest for a static managed object type.
      

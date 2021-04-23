@@ -5,46 +5,10 @@
 
 import CoreData
 
-/**
- Generic which gets an existing entity of a given name and type, or creates one if necessary.
- */
 
-internal func getNamed<EntityType: NSManagedObject>(_ named: String, type: EntityType.Type, in context: NSManagedObjectContext, createIfMissing: Bool) -> EntityType? {
-    let request: NSFetchRequest<EntityType> = EntityType.fetcher(in: context)
-    request.predicate = NSPredicate(format: "name = %@", named)
-    if let results = try? context.fetch(request), let object = results.first {
-        return object
-    }
-    
-    if createIfMissing {
-        let description = EntityType.self.entityDescription(in: context)
-        if let object = NSManagedObject(entity: description, insertInto: context) as? EntityType {
-            object.setValue(named, forKey: "name")
-            return object
-        }
-    }
-    
-    return nil
-}
 
 
 extension NSManagedObject {
-    /**
-     Return the entity of our type with a given name, or make it if it doesn't exist.
-    */
-    
-    public class func named(_ named: String, in context: NSManagedObjectContext) -> Self {
-        return getNamed(named, type: self, in: context, createIfMissing: true)!
-    }
-    
-    /**
-     Return the entity of our type with a given name.
-     If it doesn't exist, we optionally create it, or return nil.
-    */
-    
-    public class func named(_ named: String, in context: NSManagedObjectContext, createIfMissing: Bool) -> Self? {
-        return getNamed(named, type: self, in: context, createIfMissing: createIfMissing)
-    }
 
     /**
      Make a new instance in the given context.
@@ -110,22 +74,3 @@ extension NSManagedObject {
 
 }
 
-
-protocol IMO where Self: NSManagedObject {
-    static func withId<I>(_ id: I, in context: NSManagedObjectContext) -> Self where I: Identifiable
-    static func withId<I>(_ id: I, in context: NSManagedObjectContext, createIfMissing: Bool) -> Self? where I: Identifiable
-}
-
-extension IMO {
-    static func withId(_ id: Self.ID, in context: NSManagedObjectContext) -> Self where Self: Identifiable {
-        return getWithId(id, type: self, in: context, createIfMissing: true)!
-    }
-
-    /**
-     Return the entity of our type with a given uuid.
-     */
-    
-    static func withId(_ id: Self.ID, in context: NSManagedObjectContext, createIfMissing: Bool = false) -> Self? where Self: Identifiable {
-        return getWithId(id, type: self, in: context, createIfMissing: createIfMissing)
-    }
-}
