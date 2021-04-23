@@ -18,12 +18,13 @@ let package = Package(
             targets: ["CoreDataExtensions"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/elegantchaos/Logger.git", from: "1.6.0"),
         .package(url: "https://github.com/elegantchaos/XCTestExtensions.git", from: "1.3.1")
     ],
     targets: [
         .target(
             name: "CoreDataExtensions",
-            dependencies: []),
+            dependencies: ["Logger"]),
         .testTarget(
             name: "CoreDataExtensionsTests",
             dependencies: ["CoreDataExtensions", "XCTestExtensions"]),
