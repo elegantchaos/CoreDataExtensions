@@ -4,13 +4,13 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import CoreData
-
+import Foundation
 
 public extension NSManagedObject {
     static func autoDescription() -> NSEntityDescription {
         let entity = NSEntityDescription()
-        let fullName = Self.className()
-        let shortName = String(fullName.split(separator: ".").last!)
+        let fullName = Self.self.description() // includes the module name
+        let shortName = String(describing: Self.self)
         
         entity.name = shortName
         entity.managedObjectClassName = fullName
@@ -20,11 +20,13 @@ public extension NSManagedObject {
             var isDynamic = false
             var type: String? = nil
             CoreDataExtensions.forEach(applicationOf: property_copyAttributeList, to: property) { attribute in
-                switch attribute.name[0] {
-                    case CChar("D"):
+                let char = Int(attribute.name[0])
+                let scalar = Unicode.Scalar(char)!
+                switch Character(scalar) {
+                    case "D":
                         isDynamic = true
                         
-                    case CChar("T"):
+                    case "T":
                         type = String(utf8String: attribute.value)
                         
                     default:
@@ -38,6 +40,7 @@ public extension NSManagedObject {
             }
         }
         
+        print(entity)
         return entity
     }
     
@@ -59,12 +62,14 @@ public extension NSManagedObject {
                 
             case "@\"NSDate\"":
                 description.attributeType = .dateAttributeType
-                
+
+            case "@\"NSUUID\"":
+                description.attributeType = .UUIDAttributeType
+
             default:
                 fatalError("unhandled type \(type)")
         }
-        description.attributeType = .stringAttributeType
-        description.isOptional = false
+        description.isOptional = true // Cloudkit requires this to be true, but we will arrange for there to always be a value
         return description
     }
 }
