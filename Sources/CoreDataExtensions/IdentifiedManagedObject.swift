@@ -47,11 +47,11 @@ import CoreData
         return nil
     }
     
-    static func predicateArgument(for id: Self.ID) -> CVarArg {
-        String(describing: id)
-    }
-    
     static func predicateArgument(for id: Self.ID) -> CVarArg where ID: CVarArg {
         id
+    }
+    
+    static func predicateArgument(for id: UUID) -> CVarArg {
+        id as CVarArg
     }
 }
